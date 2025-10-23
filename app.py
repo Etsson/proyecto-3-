@@ -44,9 +44,11 @@ def run():
 
 # ---------- 🔹 FCFS ----------
 def fcfs(procs):
-    order = sorted(procs, key=lambda x: x['arrival'])
+    procs_copy = [p.copy() for p in procs]
+    order = sorted(procs_copy, key=lambda x: x['arrival'])
     t = 0
     execution = []
+    queue_history = []
 
     for p in order:
         start = max(t, p['arrival'])
@@ -59,32 +61,35 @@ def fcfs(procs):
             "waiting": start - p["arrival"],
             "turnaround": finish - p["arrival"]
         })
+        queue_history.append({
+            "time": t,
+            "executing": p["name"],
+            "queue": [x["name"] for x in order if x["arrival"] > t]
+        })
 
-    return {"execution": execution, "queue_history": []}
+    return {"execution": execution, "queue_history": queue_history}
 
 
-# ---------- 🔹 SJF ----------
+# ---------- 🔹 SJF (No preemptive) ----------
 def sjf(procs):
-    # trabajamos sobre copias para no mutar la lista original
     procs_copy = [p.copy() for p in procs]
-    # cola ordenada por llegada
     queue = sorted(procs_copy, key=lambda x: x['arrival'])
     ready = []
     t = 0
     execution = []
-    queue_history = []  # opcional: puedes rellenarlo si quieres mostrar la cola en tiempo real
+    queue_history = []
 
     while queue or ready:
-        # mover los que ya llegaron a 'ready'
+        # Mueve los que ya llegaron al ready
         while queue and queue[0]['arrival'] <= t:
             ready.append(queue.pop(0))
 
         if not ready:
-            # si no hay listos, adelanta el reloj al siguiente arrival
+            # Adelanta el tiempo al próximo proceso si no hay listos
             t = queue[0]['arrival']
             continue
 
-        # seleccionar el de menor burst entre los listos
+        # Selecciona el de menor burst
         ready.sort(key=lambda x: x['burst'])
         p = ready.pop(0)
 
@@ -100,7 +105,6 @@ def sjf(procs):
             "turnaround": finish - p["arrival"]
         })
 
-        # (opcional) guardar estado de la cola en este instante
         queue_history.append({
             "time": t,
             "executing": p["name"],
@@ -110,28 +114,30 @@ def sjf(procs):
     return {"execution": execution, "queue_history": queue_history}
 
 
-
 # ---------- 🔹 ROUND ROBIN ----------
 def round_robin(procs, quantum):
-    queue = sorted(procs, key=lambda x: x['arrival'])
+    procs_copy = [p.copy() for p in procs]
+    queue = sorted(procs_copy, key=lambda x: x['arrival'])
     t = 0
     execution = []
     queue_history = []
-    ready_queue = []
+    ready = []
+    finished = []
 
-    while queue or ready_queue:
-        # Mueve los procesos que llegan a tiempo t a la cola de listos
+    while queue or ready:
+        # Mueve los procesos que ya llegaron al tiempo t
         while queue and queue[0]['arrival'] <= t:
-            ready_queue.append(queue.pop(0))
+            ready.append(queue.pop(0))
 
-        if not ready_queue:
-            t += 1
+        if not ready:
+            # Si no hay procesos listos, avanza el tiempo
+            t = queue[0]['arrival']
             continue
 
-        p = ready_queue.pop(0)
-        exec_time = min(quantum, p['burst'])
+        p = ready.pop(0)
         start = t
-        finish = t + exec_time
+        exec_time = min(p['burst'], quantum)
+        finish = start + exec_time
         t = finish
         p['burst'] -= exec_time
 
@@ -139,21 +145,40 @@ def round_robin(procs, quantum):
             "name": p["name"],
             "start": start,
             "finish": finish,
-            "remaining": p['burst']
+            "remaining": p["burst"]
         })
 
-        # Guarda el estado actual de la cola
+        # Guarda el estado de la cola en este instante
         queue_history.append({
             "time": t,
             "executing": p["name"],
-            "queue": [x['name'] for x in ready_queue]
+            "queue": [x['name'] for x in ready] + [x['name'] for x in queue]
         })
 
+        # Mueve procesos que llegaron durante la ejecución al ready
+        while queue and queue[0]['arrival'] <= t:
+            ready.append(queue.pop(0))
+
         if p['burst'] > 0:
-            # Si no terminó, vuelve al final
-            ready_queue.append(p)
+            # Si no ha terminado, vuelve al final de la cola
+            ready.append(p)
+        else:
+            # Si terminó, guárdalo con sus tiempos
+            finished.append(p)
+
+    # Calcular tiempos de espera y retorno reales
+    for e in execution:
+        name = e["name"]
+        all_execs = [x for x in execution if x["name"] == name]
+        first_start = all_execs[0]["start"]
+        last_finish = all_execs[-1]["finish"]
+        arrival = next(p["arrival"] for p in procs_copy if p["name"] == name)
+        turnaround = last_finish - arrival
+        waiting = turnaround - sum(min(x["finish"] - x["start"], quantum) for x in all_execs)
+        e.update({"waiting": waiting, "turnaround": turnaround})
 
     return {"execution": execution, "queue_history": queue_history}
+
 
 
 if __name__ == '__main__':
