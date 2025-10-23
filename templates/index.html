@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Simulador de Procesos</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <h1>Simulador de Planificación de Procesos</h1>
+
+  <!-- 🔹 Sección para agregar procesos -->
+  <div class="form">
+    <input id="name" placeholder="Nombre del proceso">
+    <input id="arrival" type="number" placeholder="Instante de llegada">
+    <input id="burst" type="number" placeholder="Tiempo de CPU">
+    <button onclick="addProcess()">Agregar Proceso</button>
+  </div>
+
+  <!-- 🔹 Sección para elegir algoritmo -->
+  <div class="algorithms">
+    <select id="algorithm">
+      <option value="FCFS">FCFS</option>
+      <option value="SJF">SJF</option>
+      <option value="RR">Round Robin</option>
+    </select>
+    <input id="quantum" type="number" placeholder="Quantum (solo RR)">
+    <button onclick="run()">Ejecutar</button>
+    <button onclick="cancelSimulation()" class="btn-cancel">Cancelar</button>
+  <button onclick="clearTable()" class="btn-clear">Limpiar Tabla</button>
+ <button onclick="resetAll()" class="btn-reset">Reiniciar</button>
+  </div>
+
+
+  <!-- 🔹 Tabla de procesos agregados -->
+  <h2>Procesos Ingresados</h2>
+  <table id="table">
+    <tr><th>Nombre</th><th>Llegada</th><th>CPU</th></tr>
+  </table>
+
+  <!-- 🔹 Área de simulación -->
+  <h2>Simulación</h2>
+  <div id="simulation"></div>
+
+<!-- 🔹 Tabla de ejecución -->
+<h3>Resultados de Ejecución</h3>
+<table id="tablaResultados" border="1">
+  <tr><th>Proceso</th><th>Inicio</th><th>Fin</th></tr>
+</table>
+
+<!-- 🔹 Historial de Cola -->
+<h3>Cola de procesos (tiempo real)</h3>
+<table id="tablaCola" border="1">
+  <tr><th>Tiempo</th><th>Ejecutando</th><th>Cola</th></tr>
+</table>
+
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
