@@ -1,4 +1,4 @@
-#inicio de proceso
+#inicio para proceso sjf
 def sjf(processes):
     processes = sorted(processes, key=lambda p: p['arrival'])
     completed = []
