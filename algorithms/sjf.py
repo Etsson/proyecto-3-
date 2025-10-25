@@ -1,19 +1,20 @@
+#inicio para proceso sjf
 def sjf(processes):
     processes = sorted(processes, key=lambda p: p['arrival'])
     completed = []
     current_time = 0
 
     while processes:
-        # Filtrar procesos que ya llegaron
+        # Filtra los procesos que ya llegaron
         available = [p for p in processes if p['arrival'] <= current_time]
 
         if not available:
-            # Si no hay procesos disponibles, avanza el tiempo
+            # Si no hay procesos disponibles, avanza el tiempo...
             current_time = processes[0]['arrival']
             continue
 
-        # Seleccionar el proceso con menor burst time
-        shortest = min(available, key=lambda p: p['burst'])
+        # Selecciona el proceso con menor burst time..
+        shortest = min(available, key=lambda p: p['burst']) 
         processes.remove(shortest)
 
         start = current_time
