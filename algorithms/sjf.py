@@ -34,3 +34,5 @@ def sjf(processes):
         })
 
     return completed
+#Fin del archivo sjf.py
+#Fin de  la parte de contribucion
