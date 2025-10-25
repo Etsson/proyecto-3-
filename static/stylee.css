@@ -5,16 +5,23 @@ body {
   font-family: "Poppins", sans-serif;
   background: #f0f2f5;
   margin: 0;
-  padding: 40px;
-  color: #333;
+  padding: 41px;
+  color: #f8ac08;
+  background-color: #333;
 }
 
 h1 {
   text-align: center;
-  color: #2c3e50;
+  color: #fcfcfc;
   margin-bottom: 30px;
   font-size: 2.2em;
   letter-spacing: 1px;
+  background-color: orange;
+  padding-bottom: 30px;
+  padding-top: 30px;
+  margin-top: 1px;
+   border-radius: 14px;
+  
 }
 
 /* ==========================
@@ -25,12 +32,23 @@ div.algorithms,
 #simulation,
 #results,
 #table {
-  background: #fff;
+  background:orange;
   border-radius: 14px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  padding: 20px;
-  margin-bottom: 25px;
+  padding: 40px;
+  color: #1a1918;
+  text-align: center;
+  margin-bottom: 20px;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+div.form{
+  float: left;
+  width: 41%;
+}
+div.algorithms{
+  float: right;
+  width: 40%;
+
 }
 
 div.form:hover,
@@ -94,10 +112,11 @@ table {
 }
 
 table th {
-  background: #4a90e2;
+  background: #ee8641;
   color: white;
   padding: 12px;
   text-align: left;
+  
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
@@ -118,13 +137,12 @@ table tr:hover {
 #simulation,
 #results {
   font-size: 1em;
-  background: #fff;
-  border-left: 5px solid #4a90e2;
+  background: #1a1918;
+  border-left: 5px solid #ffa704;
   padding: 20px;
   border-radius: 10px;
   animation: fadeIn 0.8s ease-in-out;
 }
-
 /* Animación de entrada */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
