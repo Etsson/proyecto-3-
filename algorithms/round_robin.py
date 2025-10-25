@@ -36,7 +36,7 @@ def round_robin(processes, quantum):
             'queue': [p['name'] for p in queue]
         })
 
-        # Si el proceso no ha terminado, vuelve a la cola
+        # Si el proceso aun no ha terminado, vuelve a la cola
         if current['burst'] > 0:
             current['arrival'] = time
             queue.append(current)
