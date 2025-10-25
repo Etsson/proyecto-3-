@@ -54,6 +54,79 @@
 </table>
 
 
-  <script src="/static/script.js"></script>
+  <script src="/static/script.js">
+    function renderGantt(execution) {
+    const gantt = document.getElementById('ganttContainer');
+    const times = document.getElementById('timesContainer');
+    gantt.innerHTML = '';
+    times.innerHTML = '';
+
+    if (!execution || execution.length === 0) {
+        gantt.innerHTML = '<p>No hay datos de ejecución</p>';
+        return;
+    }
+
+    // Calcular tiempo máximo total
+    const maxTime = Math.max(...execution.map(e => e.finish));
+    const processNames = [...new Set(execution.map(e => e.name))];
+
+    // 🔹 Crear encabezado de tiempos
+    let table = '<table style="border-collapse: collapse; width: 100%; text-align: center;">';
+    table += '<tr><th style="background:#eee;">Tiempo</th>';
+    for (let t = 0; t <= maxTime; t++) {
+        table += `<th style="border: 1px solid #ccc; background: #f9f9f9; padding:4px;">${t}</th>`;
+    }
+    table += '</tr>';
+
+    // 🔹 Crear filas por proceso
+    processNames.forEach(pName => {
+        table += `<tr><th style="background:#eee;">${pName}</th>`;
+        for (let t = 0; t < maxTime; t++) {
+            const isRunning = execution.some(e => e.name === pName && e.start <= t && e.finish > t);
+            const cellStyle = isRunning
+                ? `background:${colorFor(pName)}; color:white;`
+                : 'background:#f1f1f1;';
+            table += `<td style="border:1px solid #999; ${cellStyle}">${isRunning ? '❌' : ''}</td>`;
+        }
+        table += '</tr>';
+    });
+
+    table += '</table>';
+    gantt.innerHTML = table;
+
+    // 🔹 Tabla de tiempos de espera y retorno
+    let timeTable = '<h3>⏳ Tiempos por Proceso</h3>';
+    timeTable += '<table style="border-collapse: collapse; width: 60%; text-align: center;">';
+    timeTable += '<tr><th style="background:#007BFF; color:white;">Proceso</th><th style="background:#007BFF; color:white;">Espera</th><th style="background:#007BFF; color:white;">Retorno</th></tr>';
+
+    processNames.forEach(pName => {
+        const pExecs = execution.filter(e => e.name === pName);
+        const waiting = pExecs[0].waiting ?? '-';
+        const turnaround = pExecs[0].turnaround ?? '-';
+        timeTable += `<tr>
+            <td style="border:1px solid #ccc; padding:5px;">${pName}</td>
+            <td style="border:1px solid #ccc; padding:5px;">${waiting}</td>
+            <td style="border:1px solid #ccc; padding:5px;">${turnaround}</td>
+        </tr>`;
+    });
+
+    timeTable += '</table>';
+    times.innerHTML = timeTable;
+}
+
+function colorFor(name) {
+    const colors = {
+        P1: '#007bff',
+        P2: '#28a745',
+        P3: '#ffc107',
+        P4: '#dc3545',
+        P5: '#6f42c1',
+        P6: '#20c997'
+    };
+    return colors[name] || '#17a2b8';
+}
+  </script>
+
+  
 </body>
 </html>
